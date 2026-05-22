@@ -1,0 +1,1 @@
+ALTER TABLE `watchlistSettings` MODIFY COLUMN `autoRefreshSeconds` int NOT NULL DEFAULT 120;

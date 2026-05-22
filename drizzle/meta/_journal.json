@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1776398930507,
+      "tag": "0000_tiny_forge",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1776399354601,
+      "tag": "0001_little_blur",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1779445545591,
+      "tag": "0002_cute_sleepwalker",
+      "breakpoints": true
+    }
+  ]
+}

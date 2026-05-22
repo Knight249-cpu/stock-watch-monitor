@@ -1,0 +1,56 @@
+# Project TODO
+
+- [x] สร้างโครงสร้างข้อมูลสำหรับ watchlist หุ้นไทย จีน และสหรัฐ พร้อมจำกัดรายการสูงสุด 20 หุ้นต่อผู้ใช้
+- [x] สร้างตารางฐานข้อมูลสำหรับรายการหุ้น เป้าหมาย Cutloss/Sale และสถานะการแจ้งเตือน
+- [x] สร้าง backend API สำหรับค้นหา เพิ่ม ลบ และแก้ไข watchlist
+- [x] สร้าง backend API สำหรับดึงราคาหุ้นล่าสุดแบบ auto-refresh จากแหล่งข้อมูลอ้างอิงของแต่ละประเทศ
+- [x] สร้าง UI แบบ Minimalist พร้อม Responsive layout สำหรับมือถือและเดสก์ท็อป
+- [x] แสดง watchlist เป็นตารางที่มีคอลัมน์ ลำดับ ประเทศ ชื่อหุ้น ราคาปัจจุบัน Cutloss Sale
+- [x] รองรับการแก้ไขค่า Cutloss และ Sale ได้โดยตรงในตาราง
+- [x] บันทึกข้อมูล watchlist และค่า Cutloss/Sale ลงฐานข้อมูลให้คงอยู่หลังรีเฟรชหน้า
+- [x] สร้างระบบแจ้งเตือนผ่าน LINE Message API เมื่อราคา ≤ Cutloss โดยส่งคำว่า "Cutloss"
+- [x] สร้างระบบแจ้งเตือนผ่าน LINE Message API เมื่อราคา ≥ Sale โดยส่งคำว่า "Sale"
+- [x] ป้องกันการเพิ่มหุ้นเกิน 20 รายการ
+- [x] เพิ่มการทดสอบหน่วยสำหรับตรรกะสำคัญของ watchlist ราคา และการแจ้งเตือน
+- [x] ตรวจสอบสถานะระบบ ทดสอบการทำงาน และบันทึก checkpoint ก่อนส่งมอบ
+- [x] เพิ่มการทดสอบหน่วยและอินทิเกรชันสำหรับ watchlist APIs ครอบคลุม add/remove/updateTargets/refresh รวมถึง duplicate, invalid targets และ limit 20 รายการ
+- [x] ทำ auto-refresh จริงผ่าน frontend polling และเชื่อมกับ refresh API อย่างปลอดภัย
+- [x] ยืนยันแนวทาง data source ให้สอดคล้องกับแหล่งอ้างอิง SET / Investing.com / NASDAQ ในระดับประสบการณ์ใช้งาน
+- [x] ยืนยันการคงอยู่ของข้อมูล watchlist หลัง reload หน้าและจัดการ error states ของ watchlist operations ใน UI
+- [x] เพิ่ม UI error state สำหรับ dashboard load/refresh และทดสอบ responsive behavior บน mobile/desktop
+- [x] เพิ่ม validation ในการแก้ไข Cutloss/Sale โดยแจ้ง error เมื่อกรอกค่าที่ไม่ใช่ตัวเลขบวก หรือ Cutloss >= Sale แทนการแปลงเป็น null เงียบๆ
+- [x] ปรับ auto-refresh polling ให้กัน concurrent refresh requests และครอบคลุม cleanup/dependency อย่างปลอดภัย พร้อมทดสอบกรณี error
+- [x] เพิ่ม tests สำหรับ watchlist router/caller ครอบคลุม add/remove/updateTargets/refresh รวมถึง duplicate, invalid targets และ watchlist limit 20
+- [x] เพิ่มหลักฐานและการทดสอบ responsive behavior ของหน้า watchlist บน mobile และ desktop
+- [x] เพิ่ม tests สำหรับ auto-refresh polling และกรณี refresh error เพื่อยืนยันว่าไม่ยิงคำขอซ้อนและ cleanup ถูกต้อง
+- [x] เพิ่ม UI/integration test หรือหลักฐาน browser verification ว่า watchlist และค่า Cutloss/Sale ยังแสดงอยู่หลัง reload หน้า
+- [x] เพิ่ม tests สำหรับ watchlist router/caller ให้ครอบคลุม remove และกรณี Sale alert ใน refresh
+- [x] เพิ่ม tests สำหรับ auto-refresh polling ของ Home.tsx ครอบคลุม concurrent guard, cleanup on unmount/settings change และ refresh error handling
+- [x] แก้การจัดการข้อผิดพลาดเมื่อ Data API quota หมด เพื่อไม่ให้หน้า Stock Watchlist ล้มจากการค้นหาหรือรีเฟรชราคา
+- [x] เพิ่ม fallback และข้อความแจ้งเตือนที่เข้าใจง่ายเมื่อไม่สามารถดึงราคาหุ้นได้เพราะ usage exhausted
+- [x] เพิ่ม tests สำหรับกรณี Data API ตอบกลับ failed_precondition และยืนยันว่า UI/API รับมือได้อย่างปลอดภัย
+- [x] เพิ่ม UI/integration test สำหรับกรณีค้นหาหุ้นแล้ว Data API quota หมด โดยต้องแสดงข้อความที่เป็นมิตรและไม่ทำให้หน้าใช้งานล้ม
+- [x] ปรับและทดสอบ add/search flow ให้ใช้ข้อความ fallback แบบเข้าใจง่ายสำหรับ usage exhausted อย่างสม่ำเสมอทุก user flow
+- [x] รันและยืนยันการแก้ todo.md หลังอัปเดตครบทั้ง search, refresh และ tests สำหรับ quota exhaustion
+- [x] เพิ่ม UI/integration test สำหรับ add mutation เมื่อ quota exhausted เพื่อยืนยันว่าผู้ใช้เห็นข้อความ fallback ที่เป็นมิตรเหมือน search/refresh
+- [x] ยืนยันผล todo.md หลังแก้รอบสุดท้ายด้วยการอ่านไฟล์อีกครั้งก่อนบันทึก checkpoint ใหม่
+- [x] หยุดงานตรวจสอบปัญหาราคาหุ้นใน watchlist ไม่อัปเดตตามคำสั่ง force stop ของผู้ใช้ เพื่อเปลี่ยนไปทำเรื่องเพิ่มจำนวน watchlist
+- [x] หยุดงานวิเคราะห์เส้นทางดึงข้อมูลราคาหุ้นและการแสดงผลบนหน้าเว็บตามคำสั่ง force stop ของผู้ใช้ เพื่อเปลี่ยนลำดับความสำคัญของงาน
+- [x] ปรับจำนวนหุ้นสูงสุดใน watchlist จาก 20 รายการเป็น 50 รายการทั้งฝั่ง backend, frontend และข้อความที่แสดงใน UI
+- [x] อัปเดตและรันทดสอบกรณี limit ของ watchlist ให้รองรับ 50 รายการอย่างถูกต้อง
+- [x] ตรวจสอบเส้นทาง refresh ราคาและ search/add flow เพื่อหาจุดที่ยิงคำขอถี่เกินไปหรือทำงานซ้ำซ้อน
+- [x] ปรับปรุง backend ด้วย caching หรือ throttling เพื่อลดการเรียกข้อมูลราคาหุ้นที่ไม่จำเป็น
+- [x] ปรับปรุง frontend polling และการรีเฟรชข้อมูลให้ลดคำขอซ้ำและไม่เรียกเมื่อข้อมูลยังใหม่พอ
+- [x] เพิ่มและรันทดสอบกรณี optimization เพื่อยืนยันว่าพฤติกรรมใหม่ยังถูกต้อง
+- [x] ตรวจสอบโครงสร้างไฟล์และไฟล์คอนฟิกของโปรเจ็กต์เพื่อยืนยัน Tech Stack และภาษาที่ใช้
+- [x] วิเคราะห์เส้นทางอัปเดตราคาเพื่อหาจุดที่ทำให้เกิด high-frequency polling หรือคำขอซ้ำซ้อนที่เพิ่มการใช้ทรัพยากร
+- [x] ออกแบบแนวทาง refactor สำหรับการอัปเดตราคาแบบเชื่อมต่อยาว เช่น WebSocket หรือ streaming endpoint ที่เหมาะกับสถาปัตยกรรมปัจจุบัน
+- [x] ปรับ backend และ frontend ให้ลดการยิง request ซ้ำ พร้อมบันทึกไฟล์โค้ดใหม่และคงพฤติกรรม watchlist เดิม
+- [x] เพิ่มและรันทดสอบสำหรับ flow การอัปเดตแบบใหม่ พร้อมสรุปผลว่าเดิมใช้ภาษาอะไรและแก้อะไรไปบ้าง
+- [x] ตรวจสอบโครงสร้างโปรเจ็กต์และไฟล์สำคัญที่ต้องรวมในแพ็กซอร์สโค้ดสำหรับการย้ายออกไปโฮสต์ภายนอก
+- [x] ตรวจสอบกลไก periodic update หรือ cron job ที่ใช้สำหรับอัปเดตราคาและส่ง LINE alert ทุก 1 นาที
+- [x] สร้างไฟล์ ZIP ของซอร์สโค้ดทั้งหมดสำหรับให้ผู้ใช้ดาวน์โหลด
+- [x] จัดทำคู่มือแบบ step-by-step สำหรับ deploy บน Render หรือ Railway พร้อมการตั้งค่า background/scheduled jobs
+- [x] สรุป Tech Stack, รายการ environment variables สำคัญ และข้อควรระวังเมื่อนำออกไปรันนอก Manus
+- [x] เพิ่ม script หรือ entrypoint สำหรับรัน refresh watchlist และส่ง LINE alerts แบบ scheduled ทุก 1 นาทีบนโฮสต์ภายนอก
+- [x] เพิ่มเอกสารอธิบายวิธีเรียกใช้ runner/cron logic ใหม่นอกแพลตฟอร์ม Manus
