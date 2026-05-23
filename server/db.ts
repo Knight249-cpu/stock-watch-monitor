@@ -8,9 +8,12 @@ import {
   watchlistItems,
   watchlistSettings,
 } from "../drizzle/schema";
-import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
+
+function normalizeEmail(email: string) {
+  return email.trim().toLowerCase();
+}
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
@@ -25,82 +28,97 @@ export async function getDb() {
   return _db;
 }
 
-export async function upsertUser(user: InsertUser): Promise<void> {
-  if (!user.openId) {
-    throw new Error("User openId is required for upsert");
-  }
-
-  const db = await getDb();
-  if (!db) {
-    console.warn("[Database] Cannot upsert user: database not available");
-    return;
-  }
-
-  try {
-    const values: InsertUser = {
-      openId: user.openId,
-    };
-    const updateSet: Record<string, unknown> = {};
-
-    const textFields = ["name", "email", "loginMethod"] as const;
-    type TextField = (typeof textFields)[number];
-
-    const assignNullable = (field: TextField) => {
-      const value = user[field];
-      if (value === undefined) return;
-      const normalized = value ?? null;
-      values[field] = normalized;
-      updateSet[field] = normalized;
-    };
-
-    textFields.forEach(assignNullable);
-
-    if (user.lastSignedIn !== undefined) {
-      values.lastSignedIn = user.lastSignedIn;
-      updateSet.lastSignedIn = user.lastSignedIn;
-    }
-    if (user.role !== undefined) {
-      values.role = user.role;
-      updateSet.role = user.role;
-    } else if (user.openId === ENV.ownerOpenId) {
-      values.role = "admin";
-      updateSet.role = "admin";
-    }
-
-    if (!values.lastSignedIn) {
-      values.lastSignedIn = new Date();
-    }
-
-    if (Object.keys(updateSet).length === 0) {
-      updateSet.lastSignedIn = new Date();
-    }
-
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
-      set: updateSet,
-    });
-  } catch (error) {
-    console.error("[Database] Failed to upsert user:", error);
-    throw error;
-  }
-}
-
-export async function getUserByOpenId(openId: string) {
-  const db = await getDb();
-  if (!db) {
-    console.warn("[Database] Cannot get user: database not available");
-    return undefined;
-  }
-
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
-
-  return result.length > 0 ? result[0] : undefined;
-}
-
 function requireDb(db: Awaited<ReturnType<typeof getDb>>) {
   if (!db) {
     throw new Error("Database is not available");
   }
   return db;
+}
+
+export async function countUsers() {
+  const db = requireDb(await getDb());
+  const rows = await db.select({ total: count() }).from(users);
+  return Number(rows[0]?.total ?? 0);
+}
+
+export async function getUserById(id: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get user by id: database not available");
+    return undefined;
+  }
+
+  const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+  return result[0] ?? undefined;
+}
+
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get user by email: database not available");
+    return undefined;
+  }
+
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, normalizeEmail(email)))
+    .limit(1);
+
+  return result[0] ?? undefined;
+}
+
+export async function createUser(input: {
+  email: string;
+  name?: string | null;
+  passwordHash: string;
+  role?: "user" | "admin";
+  createdByAdminId?: number | null;
+  isActive?: number;
+}) {
+  const db = requireDb(await getDb());
+
+  const values: InsertUser = {
+    email: normalizeEmail(input.email),
+    name: input.name ?? null,
+    passwordHash: input.passwordHash,
+    role: input.role ?? "user",
+    isActive: input.isActive ?? 1,
+    createdByAdminId: input.createdByAdminId ?? null,
+  };
+
+  await db.insert(users).values(values);
+
+  const created = await getUserByEmail(values.email);
+  if (!created) {
+    throw new Error("Failed to create user");
+  }
+
+  return created;
+}
+
+export async function updateUserPassword(id: number, passwordHash: string) {
+  const db = requireDb(await getDb());
+  await db.update(users).set({ passwordHash }).where(eq(users.id, id));
+  return getUserById(id);
+}
+
+export async function updateUserLastSignedIn(id: number) {
+  const db = requireDb(await getDb());
+  const signedInAt = new Date();
+  await db.update(users).set({ lastSignedIn: signedInAt }).where(eq(users.id, id));
+  return getUserById(id);
+}
+
+export async function listUsers() {
+  const db = requireDb(await getDb());
+  return db.select().from(users).orderBy(asc(users.id));
+}
+
+export async function deactivateUser(id: number) {
+  const db = requireDb(await getDb());
+  await db.update(users).set({ isActive: 0 }).where(eq(users.id, id));
+  return getUserById(id);
 }
 
 export async function getOrCreateWatchlistSettings(userId: number) {
