@@ -54,3 +54,22 @@
 - [x] สรุป Tech Stack, รายการ environment variables สำคัญ และข้อควรระวังเมื่อนำออกไปรันนอก Manus
 - [x] เพิ่ม script หรือ entrypoint สำหรับรัน refresh watchlist และส่ง LINE alerts แบบ scheduled ทุก 1 นาทีบนโฮสต์ภายนอก
 - [x] เพิ่มเอกสารอธิบายวิธีเรียกใช้ runner/cron logic ใหม่นอกแพลตฟอร์ม Manus
+- [x] ตรวจสอบไฟล์ ZIP ที่ผู้ใช้แนบมาเพื่อยืนยันโครงสร้างโปรเจ็กต์ คำสั่ง build/start และไฟล์สำคัญสำหรับการ deploy บน Render
+- [x] ระบุบริการที่ต้องสร้างบน Render สำหรับเว็บหลักและงานอัปเดตราคา/แจ้งเตือนทุก 1 นาที
+- [x] จัดทำคู่มือแบบ step-by-step สำหรับการคลิกตั้งค่าใน Render พร้อมรายการ environment variables ที่ต้องใส่
+- [x] Audit all current dependencies on Manus OAuth across backend, frontend, and deploy flow for external hosting.
+- [x] Design and confirm a replacement authentication approach that works on Render without Manus OAuth.
+- [x] Refactor authentication/session flow to remove Manus OAuth dependency.
+- [ ] Update tests and deployment documentation for the new non-Manus auth flow.
+- [ ] Design multi-user local authentication with registration and login flows that work on Render.
+- [ ] Add database support for local credentials while preserving existing watchlist ownership relations.
+- [ ] Replace Manus OAuth redirects and callback flow with app-managed register/login/logout routes and screens.
+- [ ] Add tests and deployment instructions for multi-user local auth on Render.
+- [x] Design admin-managed multi-user local authentication where end users cannot self-register.
+- [x] Add database support for local credentials, managed accounts, and password lifecycle without Manus OAuth.
+- [x] Build admin-managed account creation and sign-in flows to replace Manus OAuth on Render.
+- [ ] Add tests and deployment steps for admin-managed local auth on Render.
+- [ ] ตรวจสถานะ service และ deployment source ปัจจุบันบน Render หลังผู้ใช้ล็อกอินให้แล้ว
+- [ ] Redeploy web service บน Render ให้ใช้ local auth เวอร์ชันล่าสุด
+- [ ] รันหรือยืนยัน first-admin bootstrap บน Render สำหรับบัญชีแอดมินคนแรก
+- [ ] ทดสอบ login แอดมินและหน้า Admin Users บน Render หลัง deploy
