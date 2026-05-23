@@ -8,12 +8,12 @@ import {
   timestamp,
   uniqueIndex,
   varchar,
+  type AnyMySqlColumn,
 } from "drizzle-orm/mysql-core";
 
 /**
- * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
+ * Core user table backing local authentication.
+ * User records are created by admins and linked to watchlist data through numeric userId.
  */
 export const users = mysqlTable("users", {
   /**
@@ -21,12 +21,15 @@ export const users = mysqlTable("users", {
    * Use this for relations between tables.
    */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
-  email: varchar("email", { length: 320 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  isActive: int("isActive").default(1).notNull(),
+  createdByAdminId: int("createdByAdminId").references(
+    (): AnyMySqlColumn => users.id,
+    { onDelete: "set null" }
+  ),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
